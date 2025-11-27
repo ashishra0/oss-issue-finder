@@ -18,8 +18,9 @@ type Evaluator struct {
 }
 
 func NewEvaluator(apiKey string) *Evaluator {
+	client := anthropic.NewClient(option.WithAPIKey(apiKey))
 	return &Evaluator{
-		client: anthropic.NewClient(option.WithAPIKey(apiKey)),
+		client: &client,
 	}
 }
 
@@ -73,11 +74,11 @@ Be VERY selective - quality over quantity. Return at most 5 matches. If no issue
 		profile.ExperienceYears, string(profileJSON), string(issuesJSON))
 
 	response, err := e.client.Messages.New(ctx, anthropic.MessageNewParams{
-		Model:     anthropic.F("claude-sonnet-4-5-20250929"),
-		MaxTokens: anthropic.F(int64(4096)),
-		Messages: anthropic.F([]anthropic.MessageParam{
+		Model:     "claude-sonnet-4-5-20250929",
+		MaxTokens: 4096,
+		Messages: []anthropic.MessageParam{
 			anthropic.NewUserMessage(anthropic.NewTextBlock(prompt)),
-		}),
+		},
 	})
 
 	if err != nil {
